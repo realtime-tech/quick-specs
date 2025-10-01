@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Specs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .spec-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .spec-row:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .spec-value {
+            color: #777;
+            text-align: right;
+            word-break: break-word;
+            max-width: 60%;
+        }
+
+        .loading {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+        }
+
+        .status-online {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .status-offline {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖥️ Quick Specs</h1>
+        
+        <div class="grid">
+            <!-- Browser Info -->
+            <div class="card">
+                <div class="card-title">🌐 Browser</div>
+                <div id="browser-info"></div>
+            </div>
+
+            <!-- Operating System -->
+            <div class="card">
+                <div class="card-title">💻 Operating System</div>
+                <div id="os-info"></div>
+            </div>
+
+            <!-- Hardware -->
+            <div class="card">
+                <div class="card-title">⚙️ Hardware</div>
+                <div id="hardware-info"></div>
+            </div>
+
+            <!-- Display -->
+            <div class="card">
+                <div class="card-title">🖥️ Display</div>
+                <div id="display-info"></div>
+            </div>
+
+            <!-- Network -->
+            <div class="card">
+                <div class="card-title">🌍 Network</div>
+                <div id="network-info"></div>
+            </div>
+
+            <!-- Battery (if available) -->
+            <div class="card" id="battery-card" style="display: none;">
+                <div class="card-title">🔋 Battery</div>
+                <div id="battery-info"></div>
+            </div>
+
+            <!-- Graphics -->
+            <div class="card">
+                <div class="card-title">🎮 Graphics</div>
+                <div id="graphics-info"></div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="card">
+                <div class="card-title">📊 Additional Info</div>
+                <div id="additional-info"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createSpecRow(label, value) {
+            return `
+                <div class="spec-row">
+                    <span class="spec-label">${label}:</span>
+                    <span class="spec-value">${value}</span>
+                </div>
+            `;
+        }
+
+        // Browser Info
+        function getBrowserInfo() {
+            const ua = navigator.userAgent;
+            let browserName = "Unknown";
+            let browserVersion = "Unknown";
+
+            if (ua.indexOf("Firefox") > -1) {
+                browserName = "Firefox";
+                browserVersion = ua.match(/Firefox\/(\d+\.\d+)/)?.[1] || "Unknown";
+            } else if (ua.indexOf("Edg") > -1) {
+                browserName = "Edge";
+                browserVersion = ua.match(/Edg\/(\d+\.\d+)/)?.[1] || "Unknown";
+            } else if (ua.indexOf("Chrome") > -1) {
+                browserName = "Chrome";
+                browserVersion = ua.match(/Chrome\/(\d+\.\d+)/)?.[1] || "Unknown";
+            } else if (ua.indexOf("Safari") > -1) {
+                browserName = "Safari";
+                browserVersion = ua.match(/Version\/(\d+\.\d+)/)?.[1] || "Unknown";
+            }
+
+            return { browserName, browserVersion, userAgent: ua };
+        }
+
+        // OS Info
+        function getOSInfo() {
+            const ua = navigator.userAgent;
+            const platform = navigator.platform;
+            let os = "Unknown";
+            let architecture = navigator.platform;
+
+            if (ua.indexOf("Win") > -1) os = "Windows";
+            else if (ua.indexOf("Mac") > -1) os = "MacOS";
+            else if (ua.indexOf("Linux") > -1) os = "Linux";
+            else if (ua.indexOf("Android") > -1) os = "Android";
+            else if (ua.indexOf("iOS") > -1 || ua.indexOf("iPhone") > -1 || ua.indexOf("iPad") > -1) os = "iOS";
+
+            return { os, platform, architecture };
+        }
+
+        // Hardware Info
+        function getHardwareInfo() {
+            const cores = navigator.hardwareConcurrency || "Unknown";
+            const memory = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : "Unknown";
+            
+            return { cores, memory };
+        }
+
+        // Display Info
+        function getDisplayInfo() {
+            return {
+                resolution: `${screen.width} x ${screen.height}`,
+                availableResolution: `${screen.availWidth} x ${screen.availHeight}`,
+                colorDepth: `${screen.colorDepth}-bit`,
+                pixelRatio: window.devicePixelRatio || 1,
+                orientation: screen.orientation?.type || "Unknown"
+            };
+        }
+
+        // Graphics Info
+        function getGraphicsInfo() {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                const vendor = debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : "Unknown";
+                const renderer = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : "Unknown";
+                
+                return { vendor, renderer };
+            }
+            
+            return { vendor: "WebGL not supported", renderer: "N/A" };
+        }
+
+        // Network Info
+        async function getNetworkInfo() {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            const online = navigator.onLine;
+            
+            let networkInfo = {
+                status: online ? "Online" : "Offline",
+                type: connection?.effectiveType || "Unknown",
+                downlink: connection?.downlink ? `${connection.downlink} Mbps` : "Unknown",
+                rtt: connection?.rtt ? `${connection.rtt} ms` : "Unknown",
+                publicIP: "Loading..."
+            };
+
+            // Update UI first with basic info
+            updateNetworkUI(networkInfo);
+
+            // Fetch public IP
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                networkInfo.publicIP = data.ip;
+                
+                // Fetch additional IP info
+                const ipInfoResponse = await fetch(`https://ipapi.co/${data.ip}/json/`);
+                const ipInfo = await ipInfoResponse.json();
+                networkInfo.city = ipInfo.city || "Unknown";
+                networkInfo.region = ipInfo.region || "Unknown";
+                networkInfo.country = ipInfo.country_name || "Unknown";
+                networkInfo.isp = ipInfo.org || "Unknown";
+            } catch (error) {
+                networkInfo.publicIP = "Unable to fetch";
+            }
+
+            return networkInfo;
+        }
+
+        function updateNetworkUI(networkInfo) {
+            const statusClass = networkInfo.status === "Online" ? "status-online" : "status-offline";
+            let html = `
+                ${createSpecRow('Status', `<span class="${statusClass}">${networkInfo.status}</span>`)}
+                ${createSpecRow('Public IP', networkInfo.publicIP)}
+            `;
+            
+            if (networkInfo.city) html += createSpecRow('Location', `${networkInfo.city}, ${networkInfo.region}, ${networkInfo.country}`);
+            if (networkInfo.isp) html += createSpecRow('ISP', networkInfo.isp);
+            if (networkInfo.type !== "Unknown") html += createSpecRow('Connection Type', networkInfo.type);
+            if (networkInfo.downlink !== "Unknown") html += createSpecRow('Downlink', networkInfo.downlink);
+            if (networkInfo.rtt !== "Unknown") html += createSpecRow('RTT', networkInfo.rtt);
+            
+            document.getElementById('network-info').innerHTML = html;
+        }
+
+        // Battery Info
+        async function getBatteryInfo() {
+            if ('getBattery' in navigator) {
+                try {
+                    const battery = await navigator.getBattery();
+                    document.getElementById('battery-card').style.display = 'block';
+                    
+                    const updateBattery = () => {
+                        const level = Math.round(battery.level * 100);
+                        const charging = battery.charging;
+                        const chargingTime = battery.chargingTime === Infinity ? "N/A" : `${Math.round(battery.chargingTime / 60)} minutes`;
+                        const dischargingTime = battery.dischargingTime === Infinity ? "N/A" : `${Math.round(battery.dischargingTime / 60)} minutes`;
+                        
+                        document.getElementById('battery-info').innerHTML = `
+                            ${createSpecRow('Level', `${level}%`)}
+                            ${createSpecRow('Charging', charging ? 'Yes' : 'No')}
+                            ${createSpecRow('Charging Time', chargingTime)}
+                            ${createSpecRow('Discharging Time', dischargingTime)}
+                        `;
+                    };
+                    
+                    updateBattery();
+                    battery.addEventListener('levelchange', updateBattery);
+                    battery.addEventListener('chargingchange', updateBattery);
+                } catch (error) {
+                    console.log('Battery info not available');
+                }
+            }
+        }
+
+        // Additional Info
+        function getAdditionalInfo() {
+            return {
+                language: navigator.language,
+                languages: navigator.languages.join(', '),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                cookiesEnabled: navigator.cookieEnabled ? 'Yes' : 'No',
+                doNotTrack: navigator.doNotTrack || 'Not set',
+                touchSupport: 'ontouchstart' in window ? 'Yes' : 'No'
+            };
+        }
+
+        // Initialize
+        async function init() {
+            // Browser
+            const browser = getBrowserInfo();
+            document.getElementById('browser-info').innerHTML = `
+                ${createSpecRow('Name', browser.browserName)}
+                ${createSpecRow('Version', browser.browserVersion)}
+                ${createSpecRow('User Agent', browser.userAgent)}
+            `;
+
+            // OS
+            const os = getOSInfo();
+            document.getElementById('os-info').innerHTML = `
+                ${createSpecRow('Operating System', os.os)}
+                ${createSpecRow('Platform', os.platform)}
+                ${createSpecRow('Architecture', os.architecture)}
+            `;
+
+            // Hardware
+            const hardware = getHardwareInfo();
+            document.getElementById('hardware-info').innerHTML = `
+                ${createSpecRow('CPU Cores', hardware.cores)}
+                ${createSpecRow('Memory (RAM)', hardware.memory)}
+            `;
+
+            // Display
+            const display = getDisplayInfo();
+            document.getElementById('display-info').innerHTML = `
+                ${createSpecRow('Resolution', display.resolution)}
+                ${createSpecRow('Available Resolution', display.availableResolution)}
+                ${createSpecRow('Color Depth', display.colorDepth)}
+                ${createSpecRow('Pixel Ratio', display.pixelRatio)}
+                ${createSpecRow('Orientation', display.orientation)}
+            `;
+
+            // Graphics
+            const graphics = getGraphicsInfo();
+            document.getElementById('graphics-info').innerHTML = `
+                ${createSpecRow('Vendor', graphics.vendor)}
+                ${createSpecRow('Renderer', graphics.renderer)}
+            `;
+
+            // Additional
+            const additional = getAdditionalInfo();
+            document.getElementById('additional-info').innerHTML = `
+                ${createSpecRow('Language', additional.language)}
+                ${createSpecRow('All Languages', additional.languages)}
+                ${createSpecRow('Timezone', additional.timezone)}
+                ${createSpecRow('Cookies Enabled', additional.cookiesEnabled)}
+                ${createSpecRow('Do Not Track', additional.doNotTrack)}
+                ${createSpecRow('Touch Support', additional.touchSupport)}
+            `;
+
+            // Network (async)
+            document.getElementById('network-info').innerHTML = '<div class="loading">Loading network info...</div>';
+            const network = await getNetworkInfo();
+            updateNetworkUI(network);
+
+            // Battery (async)
+            await getBatteryInfo();
+        }
+
+        // Run on load
+        init();
+    </script>
+</body>
+</html>
